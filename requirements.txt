@@ -1,0 +1,2 @@
+# Mission 01 : renseigner les dépendances ML et leurs versions après validation.
+# Bibliothèques prévues : torch, torchvision, numpy, scikit-learn, matplotlib, seaborn, kaggle.

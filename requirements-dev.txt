@@ -1,0 +1,2 @@
+# Ajouter ici les dépendances nécessaires aux tests rapides.
+# unittest est fourni avec Python ; aucun paquet requis pour le socle.
