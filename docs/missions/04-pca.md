@@ -61,25 +61,31 @@ On garde **le même objet `pca`** pour les trois ensembles : la validation et le
 
 ## Choix du nombre de composantes
 
-Le sujet demande de rester entre 100 et 200 composantes. Le choix retenu est **150 composantes**, au milieu de la plage. Il s'appuie sur trois éléments, tous calculés sans le jeu de test :
-
-1. **La courbe de variance cumulée** (`outputs/pca_variance_cumulee.png`) : la variance gagnée par composante diminue très vite. Entre 150 et 200 composantes, on ne gagne que quelques points de variance.
-2. **La comparaison sur la validation** (`outputs/pca_comparaison.png`) : l'accuracy de validation progresse peu au-delà de 150 composantes, alors que l'accuracy d'entraînement continue de monter. L'écart entre les deux grandit : les composantes en plus servent surtout à mémoriser le train.
-3. **Les reconstructions** (`outputs/pca_reconstructions.png`) : avec 150 composantes, les traits du visage (yeux, sourcils, bouche) restent nettement visibles.
-
-Résultats obtenus sur FER2013 avec `python -m src.emotion_detection.pca` (à remplir après l'exécution sur les 28 709 images) :
+Le sujet demande de rester entre 100 et 200 composantes. Le choix retenu est **150 composantes**. Résultats obtenus sur FER2013 (20 096 images d'entraînement, 4 306 de validation), sans utiliser le jeu de test :
 
 | Composantes | Variance gardée | Accuracy train | Accuracy validation |
 | --- | --- | --- | --- |
-| 100 | … % | … | … |
-| 125 | … % | … | … |
-| 150 | … % | … | … |
-| 175 | … % | … | … |
-| 200 | … % | … | … |
+| 100 | 89,8 % | 37,8 % | 36,7 % |
+| 125 | 91,2 % | 38,4 % | 37,1 % |
+| **150** | **92,3 %** | **38,6 %** | **36,8 %** |
+| 175 | 93,1 % | 38,9 % | 37,0 % |
+| 200 | 93,8 % | 39,2 % | 36,3 % |
 
-Seuils de variance affichés par le script : 90 % avec … composantes, 95 % avec … composantes.
+Seuils de variance : 90 % avec 104 composantes, 95 % avec 255 composantes.
 
-Si les résultats de validation montraient un gain net au-delà de 150, il suffirait de lancer le script avec `--composantes 175` ou `--composantes 200` et de mettre à jour ce paragraphe.
+Accuracy obtenue avec une régression logistique simple (C = 1), uniquement pour comparer les nombres de composantes ; le réglage de C est fait par la mission 05.
+
+Le choix de 150 s'appuie sur trois constats :
+
+1. **Variance** (`outputs/pca_variance_cumulee.png`) : la courbe monte très vite puis s'aplatit. 150 composantes gardent **92,3 %** de la variance avec 15 fois moins de valeurs (2304 → 150). Passer à 200 n'ajoute que 1,5 point.
+2. **Validation** (`outputs/pca_comparaison.png`) : l'accuracy de validation est **stable sur toute la plage** (36,3 % à 37,1 %). Les écarts sont inférieurs à 1 point, soit quelques dizaines d'images sur 4 306 : ils ne sont pas significatifs. 125 est très légèrement devant, mais pas de façon fiable. En revanche, l'accuracy d'entraînement monte toujours : l'écart train/validation passe de 1,1 point (100) à 2,8 points (200). Les composantes supplémentaires servent à mémoriser le train, pas à mieux généraliser, et 200 donne la plus faible validation.
+3. **Reconstructions** (`outputs/pca_reconstructions.png`) : avec 150 composantes, les traits du visage (yeux, sourcils, bouche) restent nettement visibles, alors qu'à 50 les images sont floues.
+
+150 est donc un compromis sûr : au milieu de la plage demandée, plus de 92 % de la variance, et une validation équivalente aux meilleures valeurs.
+
+**Observations complémentaires :**
+- La 1ʳᵉ composante explique à elle seule 29,2 % de la variance : elle correspond surtout à la luminosité globale du visage. Les suivantes font apparaître la forme du visage, puis des zones précises (yeux, sourcils, bouche) (`outputs/pca_composantes.png`).
+- Dans le plan PC1/PC2, les sept émotions sont complètement mélangées (`outputs/pca_projection_2d.png`). La PCA, non supervisée, capte d'abord l'éclairage et la pose, pas l'émotion. C'est pourquoi on garde 150 composantes et qu'un classifieur est nécessaire ensuite.
 
 ## Accord avec la mission 05 : deux façons d'utiliser la PCA
 
@@ -176,4 +182,4 @@ Les 11 tests de `tests/test_pca.py` utilisent de petites images fabriquées. Ils
 - la comparaison des nombres de composantes ;
 - le Pipeline, qui reçoit des pixels bruts et renvoie des probabilités valides.
 
-Vérification locale : Python 3.13, scikit-learn 1.9 et numpy 2. Les 11 tests passent en moins d'une seconde. Le script complet a aussi été lancé sur des données simulées de la taille de FER2013 (20 096 / 4 306 / 4 307 images de 2304 valeurs) : il tourne en environ 20 secondes. L'exécution sur les vraies images reste à faire et à reporter dans le tableau ci-dessus. La CI du dépôt est configurée pour Python 3.11 avec `scikit-learn==1.6.1`, déclaré dans `requirements-dev.txt`.
+Vérification locale : Python 3.13, scikit-learn 1.9 et numpy 2. Les 11 tests passent en moins d'une seconde. Le script complet a aussi été lancé sur des données simulées de la taille de FER2013 (20 096 / 4 306 / 4 307 images de 2304 valeurs) : il tourne en environ 20 secondes. Le script a ensuite été exécuté sur les 28 709 images de FER2013 dans Google Colab : résultats reportés dans le tableau ci-dessus. La CI du dépôt est configurée pour Python 3.11 avec `scikit-learn==1.6.1`, déclaré dans `requirements-dev.txt`.
