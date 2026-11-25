@@ -1,6 +1,6 @@
 # Tests rapides
 
-Aucun test métier n'est encore présent. Ajouter les tests en même temps que les fonctions, sans test artificiel qui ne ferait que réussir.
+Les tests de la mission 02 sont dans `test_preprocessing.py`. Ils utilisent des images temporaires et ne nécessitent pas FER2013. Les autres missions ajouteront leurs tests avec leurs fonctions.
 
 - Mission 02 : image synthétique -> tenseur (1, 48, 48), valeurs [0, 1] ; séparation sans chevauchement et reproductible.
 - Mission 03 : petits lots -> X de forme (n, 2304), y de forme (n,), association image/label conservée.
