@@ -2,7 +2,7 @@
 
 Branche : `mission/04-pca`
 
-Responsable : Lyna.
+Responsable : Lina.
 
 Fichier : `src/emotion_detection/pca.py`
 
